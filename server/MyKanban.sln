@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyKanban.Api", "MyKanban.Api\MyKanban.Api.csproj", "{54473471-B5F3-4BBD-8393-8CB56B7D644E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyKanban.Application", "MyKanban.Application\MyKanban.Application.csproj", "{C4C4CD59-44B4-4178-A847-3EA30F9FE1FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyKanban.Domain", "MyKanban.Domain\MyKanban.Domain.csproj", "{BAD60C4E-C4F4-445C-83AB-09AE766CDBE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyKanban.Infrastructure", "MyKanban.Infrastructure\MyKanban.Infrastructure.csproj", "{4ECA9B68-D3E2-46C1-A658-1BF64E30E828}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54473471-B5F3-4BBD-8393-8CB56B7D644E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54473471-B5F3-4BBD-8393-8CB56B7D644E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54473471-B5F3-4BBD-8393-8CB56B7D644E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54473471-B5F3-4BBD-8393-8CB56B7D644E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4C4CD59-44B4-4178-A847-3EA30F9FE1FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4C4CD59-44B4-4178-A847-3EA30F9FE1FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4C4CD59-44B4-4178-A847-3EA30F9FE1FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4C4CD59-44B4-4178-A847-3EA30F9FE1FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAD60C4E-C4F4-445C-83AB-09AE766CDBE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAD60C4E-C4F4-445C-83AB-09AE766CDBE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAD60C4E-C4F4-445C-83AB-09AE766CDBE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAD60C4E-C4F4-445C-83AB-09AE766CDBE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ECA9B68-D3E2-46C1-A658-1BF64E30E828}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ECA9B68-D3E2-46C1-A658-1BF64E30E828}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ECA9B68-D3E2-46C1-A658-1BF64E30E828}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ECA9B68-D3E2-46C1-A658-1BF64E30E828}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
