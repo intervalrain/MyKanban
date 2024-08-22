@@ -1,5 +1,4 @@
-﻿using MyKanban.Domain;
-using MyKanban.Domain.Common;
+﻿using MyKanban.Domain.Common;
 
 namespace MyKanban.Application.Common;
 
@@ -10,4 +9,5 @@ public interface IRepository<T> where T : Entity
     IEnumerable<T> GetAll();
     T GetById(Guid id);
     void Update(T entity);
+    void Clear();
 }

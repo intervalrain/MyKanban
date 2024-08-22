@@ -46,6 +46,11 @@ public class InMemoryRepository<T> : IRepository<T> where T : Entity
         }
     }
 
+    public void Clear()
+    {
+        _data.Clear();
+    }
+
     private Guid GetId(T entity)
     {
         return entity.Id;

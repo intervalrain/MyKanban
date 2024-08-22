@@ -108,6 +108,8 @@ public class KanbanController : ControllerBase
     [HttpPost("missions")]
     public ActionResult<Mission> AddMission(Mission mission)
     {
+        mission.CreatedDate = DateTime.UtcNow;
+        mission.DueDate = DateTime.UtcNow.AddDays(7);
         _kanbanService.AddMission(mission);
         return CreatedAtAction(nameof(GetMission), new { id = mission.Id }, mission);
     }
@@ -143,5 +145,19 @@ public class KanbanController : ControllerBase
 
         _kanbanService.DeleteMission(id);
         return NoContent();
+    }
+
+    [HttpPost("boards/reorder")]
+    public IActionResult ReorderBoards([FromBody] IEnumerable<Guid> boardIds)
+    {
+        try
+        {
+            _kanbanService.ReorderBoards(boardIds);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while reordering boards: " + ex);
+        }
     }
 }

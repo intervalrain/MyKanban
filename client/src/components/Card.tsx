@@ -9,11 +9,13 @@ interface MissionProps {
   boardId: string;
   urgency: number;
   content: string;
-  createdDate: Date;
-  dueDate: Date;
+  createdDate: string;
+  dueDate: string;
   timeNeed: number; // Assuming this is in days
   onDragStart: (e: React.DragEvent<HTMLDivElement>) => void;
   onUpdate: (id: string, updates: Partial<MissionProps>) => void;
+  isEditing: boolean;
+  setEditing: (isEditing: boolean) => void;
 }
 
 const Card: React.FC<MissionProps> = ({
@@ -27,9 +29,10 @@ const Card: React.FC<MissionProps> = ({
   dueDate,
   timeNeed,
   onDragStart,
-  onUpdate
+  onUpdate,
+  isEditing,
+  setEditing
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
   const [isDetailView, setIsDetailView] = useState(false);
   const [editData, setEditData] = useState({ title, category, urgency, content, dueDate, timeNeed });
   const editRef = useRef<HTMLDivElement>(null);
@@ -52,12 +55,12 @@ const Card: React.FC<MissionProps> = ({
 
   const handleSave = () => {
     onUpdate(id, editData);
-    setIsEditing(false);
+    setEditing(false);
   };
 
   const handleCancel = () => {
     setEditData({ title, category, urgency, content, dueDate, timeNeed });
-    setIsEditing(false);
+    setEditing(false);
     setIsDetailView(false);
   };
 
@@ -65,6 +68,11 @@ const Card: React.FC<MissionProps> = ({
     if (!isEditing) {
       setIsDetailView(true);
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
   };
 
   const renderStars = (rating: number) => {
@@ -124,8 +132,8 @@ const Card: React.FC<MissionProps> = ({
           <input
             id="dueDate"
             type="date"
-            value={editData.dueDate.toISOString().split('T')[0]}
-            onChange={(e) => setEditData({...editData, dueDate: new Date(e.target.value)})}
+            value={editData.dueDate}
+            onChange={(e) => setEditData({...editData, dueDate: e.target.value})}
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
@@ -166,9 +174,9 @@ const Card: React.FC<MissionProps> = ({
           <FiAlertCircle className="inline mr-2" />
           Urgency: {renderStars(urgency)}
         </div>
-        {/* <div className="mb-2"><FiCalendar className="inline mr-2" />Due: {dueDate.toLocaleDateString()}</div> */}
+        <div className="mb-2"><FiCalendar className="inline mr-2" />Due: {formatDate(dueDate)}</div>
         <div className="mb-2"><FiClock className="inline mr-2" />Time Needed: {timeNeed} days</div>
-        {/* <div className="mb-2">Created: {createdDate.toLocaleDateString()}</div> */}
+        <div className="mb-2">Created: {formatDate(createdDate)}</div>
         <div className="mt-4 prose max-w-full">
           <ReactMarkdown>{content}</ReactMarkdown>
         </div>
@@ -180,7 +188,7 @@ const Card: React.FC<MissionProps> = ({
             Close
           </button>
           <button 
-            onClick={() => { setIsDetailView(false); setIsEditing(true); }}
+            onClick={() => { setIsDetailView(false); setEditing(true); }}
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
           >
             Edit
@@ -193,15 +201,15 @@ const Card: React.FC<MissionProps> = ({
   return (
     <>
       <div
-        draggable
+        draggable={!isEditing}
         onDragStart={onDragStart}
         onClick={handleCardClick}
-        className="bg-white p-4 mb-4 rounded-lg shadow-md cursor-move transform transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1"
+        className={`bg-white p-4 mb-4 rounded-lg shadow-md ${!isEditing ? 'cursor-move' : ''} transform transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1`}
       >
         <div className="flex justify-between items-start mb-2">
           <h4 className="font-semibold text-lg text-gray-800">{title}</h4>
           <button
-            onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
+            onClick={(e) => { e.stopPropagation(); setEditing(true); }}
             className="text-gray-500 hover:text-blue-500 transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
           >
             <FiEdit3 />
@@ -211,7 +219,7 @@ const Card: React.FC<MissionProps> = ({
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center">
             <FiCalendar className="mr-1" />
-            {/* Due: {dueDate.toLocaleDateString()} */}
+            Due: {formatDate(dueDate)}
           </div>
           <div className="flex">
             {renderStars(urgency)}

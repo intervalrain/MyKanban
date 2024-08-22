@@ -33,4 +33,17 @@ public class KanbanService : IKanbanService
     public void UpdateMission(Mission mission) => _missionRepository.Update(mission);
 
     public void DeleteMission(Guid missionId) => _missionRepository.Delete(missionId);
+
+    public void ReorderBoards(IEnumerable<Guid> boardIds)
+    {
+        var map = GetBoards().ToDictionary(board => board.Id, board => board);
+        _boardRepository.Clear();
+        foreach (var boardId in boardIds)
+        {
+            if (map.TryGetValue(boardId, out Board? value))
+            {
+                _boardRepository.Add(value);
+            }
+        }
+    }
 }

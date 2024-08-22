@@ -14,4 +14,5 @@ public interface IKanbanService
     IEnumerable<Mission> GetMissions();
     void UpdateBoard(Board board);
     void UpdateMission(Mission mission);
+    void ReorderBoards(IEnumerable<Guid> boardIds);
 }

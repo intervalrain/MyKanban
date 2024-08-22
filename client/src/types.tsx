@@ -5,8 +5,8 @@ export interface Mission {
     boardId: string;
     urgency: number;
     content: string;
-    createdDate: Date;
-    dueDate: Date;
+    createdDate: string;
+    dueDate: string;
     timeNeed: number;
   }
   

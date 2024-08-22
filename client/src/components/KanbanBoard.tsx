@@ -1,17 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Card from './Card';
-import { FiPlus, FiTrash2 } from 'react-icons/fi';
-import { Mission, Board } from '../types';
+import { FiPlus, FiTrash2, FiEdit2, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+
+interface Mission {
+  id: string;
+  title: string;
+  category: string;
+  boardId: string;
+  urgency: number;
+  content: string;
+  createdDate: string;
+  dueDate: string;
+  timeNeed: number;
+}
+
+interface Board {
+  id: string;
+  name: string;
+}
 
 interface KanbanBoardProps {
   missions: Mission[];
   boards: Board[];
   onAddBoard: (name: string) => void;
-  onAddCard: (boardId: string, card: Omit<Mission, 'id' | 'boardId' | 'createdDate'>) => void;
+  onAddCard: (boardId: string, card: Omit<Mission, 'id' | 'boardId' | 'createdDate' | 'dueDate'>) => void;
   onMoveCard: (cardId: string, targetBoardId: string) => void;
   onDeleteBoard: (boardId: string) => void;
   onDeleteCard: (cardId: string) => void;
   onUpdateCard: (cardId: string, updates: Partial<Mission>) => void;
+  onUpdateBoardName: (boardId: string, newName: string) => void;
+  onReorderBoards: (boardIds: string[]) => void;
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({ 
@@ -22,11 +40,23 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onMoveCard,
   onDeleteBoard,
   onDeleteCard,
-  onUpdateCard
+  onUpdateCard,
+  onUpdateBoardName,
+  onReorderBoards
 }) => {
-  const [draggedItem, setDraggedItem] = useState<{ type: 'card' | 'board', id: string } | null>(null);
+  const [draggedCard, setDraggedCard] = useState<string | null>(null);
   const [isAddingBoard, setIsAddingBoard] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
+  const [editingBoardId, setEditingBoardId] = useState<string | null>(null);
+  const [editingCardId, setEditingCardId] = useState<string | null>(null);
+  const addBoardRef = useRef<HTMLDivElement>(null);
+  const editBoardInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingBoardId) {
+      editBoardInputRef.current?.focus();
+    }
+  }, [editingBoardId]);
 
   const handleAddBoard = () => {
     if (newBoardName.trim()) {
@@ -37,67 +67,128 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   };
 
   const handleDeleteBoard = (boardId: string) => {
+    const boardMissions = missions.filter(mission => mission.boardId === boardId);
+    boardMissions.forEach(mission => onDeleteCard(mission.id));
     onDeleteBoard(boardId);
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, type: 'card' | 'board', id: string) => {
-    setDraggedItem({ type, id });
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, cardId: string) => {
+    if (editingCardId === cardId) return;
+    setDraggedCard(cardId);
+    e.dataTransfer.setData('text/plain', cardId);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetBoardId: string) => {
     e.preventDefault();
-    if (draggedItem && draggedItem.type === 'card') {
-      onMoveCard(draggedItem.id, targetBoardId);
+    const cardId = e.dataTransfer.getData('text/plain');
+    if (cardId && draggedCard) {
+      onMoveCard(cardId, targetBoardId);
     }
-    setDraggedItem(null);
+    setDraggedCard(null);
   };
 
   const handleDeleteDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (draggedItem) {
-      if (draggedItem.type === 'card') {
-        onDeleteCard(draggedItem.id);
-      } else if (draggedItem.type === 'board') {
-        onDeleteBoard(draggedItem.id);
-      }
+    const cardId = e.dataTransfer.getData('text/plain');
+    if (cardId && draggedCard) {
+      onDeleteCard(cardId);
     }
-    setDraggedItem(null);
+    setDraggedCard(null);
   };
 
   const handleAddCard = (boardId: string) => {
-    const newCard: Omit<Mission, 'id' | 'boardId' | 'createdDate'> = {
+    const newCard: Omit<Mission, 'id' | 'boardId' | 'createdDate' | 'dueDate'> = {
       title: 'New Card',
       category: 'Default Category',
       urgency: 3,
       content: 'New Content',
-      dueDate: new Date(),
       timeNeed: 1
     };
     onAddCard(boardId, newCard);
   };
 
+  const handleBoardNameEdit = (boardId: string, newName: string) => {
+    onUpdateBoardName(boardId, newName);
+    setEditingBoardId(null);
+  };
+
+  const moveBoard = (boardId: string, direction: 'left' | 'right') => {
+    const currentIndex = boards.findIndex(board => board.id === boardId);
+    if (
+      (direction === 'left' && currentIndex > 0) || 
+      (direction === 'right' && currentIndex < boards.length - 1)
+    ) {
+      const newBoards = [...boards];
+      const [movedBoard] = newBoards.splice(currentIndex, 1);
+      newBoards.splice(direction === 'left' ? currentIndex - 1 : currentIndex + 1, 0, movedBoard);
+      onReorderBoards(newBoards.map(board => board.id));
+    }
+  };
+
   return (
     <div className="relative">
       <div className="flex overflow-x-auto p-4">
-        {boards.map(board => (
+        {boards.map((board, index) => (
           <div 
             key={board.id} 
-            className="flex-shrink-0 w-72 bg-gray-100 rounded-lg p-4 mr-4"
+            className="flex-shrink-0 w-72 bg-gray-100 rounded-lg p-4 mr-4 relative"
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, board.id)}
           >
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-bold">{board.name}</h3>
-              <button 
-                onClick={() => handleDeleteBoard(board.id)}
-                className="text-red-500 hover:text-red-700"
+            {index > 0 && (
+              <button
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-1 shadow-md"
+                onClick={() => moveBoard(board.id, 'left')}
               >
-                <FiTrash2 size={16} />
+                <FiChevronLeft size={20} />
               </button>
+            )}
+            {index < boards.length - 1 && (
+              <button
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-1 shadow-md"
+                onClick={() => moveBoard(board.id, 'right')}
+              >
+                <FiChevronRight size={20} />
+              </button>
+            )}
+            <div className="flex justify-between items-center mb-2">
+              {editingBoardId === board.id ? (
+                <input 
+                  ref={editBoardInputRef}
+                  type="text"
+                  value={board.name}
+                  onChange={(e) => onUpdateBoardName(board.id, e.target.value)}
+                  onBlur={() => setEditingBoardId(null)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleBoardNameEdit(board.id, (e.target as HTMLInputElement).value)}
+                  className="font-bold bg-transparent border-b border-gray-400 focus:outline-none focus:border-blue-500"
+                />
+              ) : (
+                <h3 
+                  className="font-bold cursor-pointer"
+                  onClick={() => setEditingBoardId(board.id)}
+                >
+                  {board.name}
+                </h3>
+              )}
+              <div className="flex">
+                <button 
+                  onClick={() => setEditingBoardId(board.id)}
+                  className="text-gray-500 hover:text-gray-700 mr-2"
+                >
+                  <FiEdit2 size={16} />
+                </button>
+                <button 
+                  onClick={() => handleDeleteBoard(board.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <FiTrash2 size={16} />
+                </button>
+              </div>
             </div>
             {missions
               .filter(mission => mission.boardId === board.id)
@@ -105,8 +196,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 <Card 
                   key={mission.id}
                   {...mission}
-                  onDragStart={(e) => handleDragStart(e, 'card', mission.id)}
+                  onDragStart={(e) => handleDragStart(e, mission.id)}
                   onUpdate={onUpdateCard}
+                  isEditing={editingCardId === mission.id}
+                  setEditing={(isEditing) => setEditingCardId(isEditing ? mission.id : null)}
                 />
               ))}
             <button 
@@ -118,7 +211,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
           </div>
         ))}
         <div 
-          className={`flex-shrink-0 h-full flex items-center justify-center transition-all duration-300 ease-in-out ${isAddingBoard ? 'w-72' : 'w-16'}`}
+          ref={addBoardRef}
+          className={`flex-shrink-0 h-full flex items-center justify-center transition-all duration-500 ease-in-out ${isAddingBoard ? 'w-72' : 'w-16'}`}
           onMouseEnter={() => !isAddingBoard && setIsAddingBoard(true)}
           onMouseLeave={() => !newBoardName && setIsAddingBoard(false)}
         >
