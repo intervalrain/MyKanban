@@ -7,19 +7,22 @@
 --- 
 ## 主畫面
 + Kanban
-![kanban](./public/images/Kanban.png)
-
-+ Calendar
-    - 設計中
-
+![kanban](./public/images/Kanban.jpg)
 + Gantt
-    - 設計中
+![gantt](./public/images/Gantt.jpg)
++ Calendar
+![calendar](./public/images/Calendar.jpg)
++ Dashboard
+![dashboard](./public/images/Dashboard.jpg)
++ List
+![list](./public/images/List.jpg)
+
 --- 
 ## Tech Stack
 ### 後端
 + .NET 8
 ### 前端
-+ React JavaScript
++ React Typescript
 ### 架構
 + Clean Architecture
     + **Api Layer:**
@@ -43,21 +46,30 @@
 + Kanban 看板
 + Calendar 月曆
 + Gantt 甘特圖
++ List 列表
++ Dashboard 儀表板
 
 ### 待辦清單
 + Kanban
     - [x] 新增看版
     - [x] 新增卡片
     - [x] 卡片拖曳
-    - [ ] 看板拖曳
+    - [x] 看板拖曳
     - [x] 卡片刪除
     - [x] 看板刪除
     - [x] 編輯卡片
-    - [ ] 看板排序
-    - [ ] 卡片排序
+    - [x] 看板排序
+    - [x] 卡片排序
     - [ ] 支援 Markdown
 + Calendar
-    - [ ] 主畫面
+    - [x] 主畫面
 + Gantt
-    - [ ] 主畫面
+    - [x] 主畫面
+    - [x] 拖曳調整
     - [ ] 演算法
++ List
+    - [x] 主畫面
+    - [x] 搜尋
++ Dashboard
+    - [x] 主畫面
+    - [x] 健康度計算
