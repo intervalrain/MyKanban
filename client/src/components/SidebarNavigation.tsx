@@ -38,12 +38,11 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({ onPageChange }) =
   return (
     <div className="flex h-screen">
       <div className="bg-gray-800 text-white w-16 flex flex-col items-center py-4">
-        <Icon d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" className="w-8 h-8 mb-8" />
         {navigationItems.map((item) => (
           <button
             key={item.name}
             className={`w-full py-3 flex justify-center items-center relative ${
-              activePage === item.name ? 'text-blue-500' : 'text-gray-400 hover:text-white'
+              activePage === item.name ? 'text-blue-400' : 'text-gray-400 hover:text-white'
             }`}
             onClick={() => handlePageChange(item.name)}
           >

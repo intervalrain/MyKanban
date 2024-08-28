@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Card from './Card';
-import { FiPlus, FiTrash2, FiEdit2, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiEdit2, FiRepeat } from 'react-icons/fi';
 
 interface Mission {
   id: string;
@@ -117,15 +117,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     setEditingBoardId(null);
   };
 
-  const moveBoard = (boardId: string, direction: 'left' | 'right') => {
+  const handleSwapBoards = (boardId: string) => {
     const currentIndex = boards.findIndex(board => board.id === boardId);
-    if (
-      (direction === 'left' && currentIndex > 0) || 
-      (direction === 'right' && currentIndex < boards.length - 1)
-    ) {
+    if (currentIndex < boards.length - 1) {
       const newBoards = [...boards];
-      const [movedBoard] = newBoards.splice(currentIndex, 1);
-      newBoards.splice(direction === 'left' ? currentIndex - 1 : currentIndex + 1, 0, movedBoard);
+      [newBoards[currentIndex], newBoards[currentIndex + 1]] = [newBoards[currentIndex + 1], newBoards[currentIndex]];
       onReorderBoards(newBoards.map(board => board.id));
     }
   };
@@ -140,20 +136,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, board.id)}
           >
-            {index > 0 && (
-              <button
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-1 shadow-md"
-                onClick={() => moveBoard(board.id, 'left')}
-              >
-                <FiChevronLeft size={20} />
-              </button>
-            )}
             {index < boards.length - 1 && (
               <button
-                className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-1 shadow-md"
-                onClick={() => moveBoard(board.id, 'right')}
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-2 shadow-md hover:bg-gray-100"
+                onClick={() => handleSwapBoards(board.id)}
               >
-                <FiChevronRight size={20} />
+                <FiRepeat size={20} />
               </button>
             )}
             <div className="flex justify-between items-center mb-2">

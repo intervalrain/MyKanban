@@ -10,4 +10,10 @@
     <ProjectReference Include="..\MyKanban.Application\MyKanban.Application.csproj" />
     <ProjectReference Include="..\MyKanban.Domain\MyKanban.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Persistence\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Persistence\" />
+  </ItemGroup>
 </Project>

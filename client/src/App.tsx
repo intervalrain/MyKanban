@@ -11,11 +11,11 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-    <SidebarNavigation onPageChange={handlePageChange} />
-    <div className="flex-1 p-4">
-      <ProjectManager currentView={currentPage as any}/>
+      <SidebarNavigation onPageChange={handlePageChange} />
+      <div className="flex-1 p-4">
+        <ProjectManager currentView={currentPage as any}/>
+      </div>
     </div>
-  </div>
   );
 };
 
