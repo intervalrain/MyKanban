@@ -23,7 +23,7 @@ interface KanbanBoardProps {
   missions: Mission[];
   boards: Board[];
   onAddBoard: (name: string) => void;
-  onAddCard: (boardId: string, card: Omit<Mission, 'id' | 'boardId' | 'createdDate' | 'dueDate'>) => void;
+  onAddCard: (boardId: string, card: Omit<Mission, 'id' | 'boardId' | 'createdDate'>) => void;
   onMoveCard: (cardId: string, targetBoardId: string) => void;
   onDeleteBoard: (boardId: string) => void;
   onDeleteCard: (cardId: string) => void;
@@ -49,6 +49,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [newBoardName, setNewBoardName] = useState('');
   const [editingBoardId, setEditingBoardId] = useState<string | null>(null);
   const [editingCardId, setEditingCardId] = useState<string | null>(null);
+  const [newCardId, setNewCardId] = useState<string | null>(null);
   const addBoardRef = useRef<HTMLDivElement>(null);
   const editBoardInputRef = useRef<HTMLInputElement>(null);
 
@@ -102,14 +103,22 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   };
 
   const handleAddCard = (boardId: string) => {
-    const newCard: Omit<Mission, 'id' | 'boardId' | 'createdDate' | 'dueDate'> = {
+    const today = new Date();
+    const dueDate = new Date(today.setDate(today.getDate() + 7)).toISOString().split('T')[0];
+    
+    const newCard: Omit<Mission, 'id' | 'boardId' | 'createdDate'> = {
       title: 'New Card',
       category: 'Default Category',
       urgency: 3,
       content: 'New Content',
-      timeNeed: 1
+      timeNeed: 1,
+      dueDate: dueDate
     };
+    
+    const newId = Date.now().toString(); // 临时ID，实际应用中应使用更可靠的ID生成方法
     onAddCard(boardId, newCard);
+    setNewCardId(newId);
+    setEditingCardId(newId);
   };
 
   const handleBoardNameEdit = (boardId: string, newName: string) => {
@@ -186,8 +195,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   {...mission}
                   onDragStart={(e) => handleDragStart(e, mission.id)}
                   onUpdate={onUpdateCard}
-                  isEditing={editingCardId === mission.id}
-                  setEditing={(isEditing) => setEditingCardId(isEditing ? mission.id : null)}
+                  isEditing={editingCardId === mission.id || newCardId === mission.id}
+                  setEditing={(isEditing) => {
+                    setEditingCardId(isEditing ? mission.id : null);
+                    if (!isEditing) setNewCardId(null);
+                  }}
                 />
               ))}
             <button 
